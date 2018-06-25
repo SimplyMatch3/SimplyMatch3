@@ -1,5 +1,6 @@
 package com.example.mindy.simplymatch3;
 
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,21 +19,21 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.navigation_home:
+                case R.id.navigation_clothing:
                     setTitle("Collections");
-                    FragmentOne fragment = new FragmentOne() ;
+                    FragmentOne fragment = new FragmentOne() ; //set the title of the action bar
                     android.support.v4.app.FragmentTransaction fragmentTransaction1 = getSupportFragmentManager().beginTransaction() ;
-                    fragmentTransaction1.replace(R.id.fram,fragment,"FragmentName") ;
+                    fragmentTransaction1.replace(R.id.fram,fragment,"FragmentName") ; //fram is id of framelayout in xml file
                     fragmentTransaction1.commit();
                     return true;
-                case R.id.navigation_dashboard:
+                case R.id.navigation_add:
                     setTitle("Add Outfits");
                     FragmentTwo fragment2 = new FragmentTwo() ;
                     android.support.v4.app.FragmentTransaction fragmentTransaction2 = getSupportFragmentManager().beginTransaction() ;
                     fragmentTransaction2.replace(R.id.fram, fragment2,"FragmentName") ;
                     fragmentTransaction2.commit();
                     return true;
-                case R.id.navigation_notifications:
+                case R.id.navigation_pieces:
                     setTitle("Clothing Pieces");
                     FragmentThree fragment3 = new FragmentThree() ;
                     android.support.v4.app.FragmentTransaction fragmentTransaction3 = getSupportFragmentManager().beginTransaction() ;
@@ -51,14 +52,35 @@ public class MainActivity extends AppCompatActivity {
 
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navigation.setOnNavigationItemSelectedListener(navListener);
 
-        //when app starts fragment one will be displayed
-        setTitle("Collections");
-        FragmentOne fragment = new FragmentOne() ;
-        android.support.v4.app.FragmentTransaction fragmentTransaction1 = getSupportFragmentManager().beginTransaction() ;
-        fragmentTransaction1.replace(R.id.fram,fragment,"FragmentName") ;
-        fragmentTransaction1.commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fram, new FragmentOne()).commit() ;
     }
 
-}
+    private android.support.design.widget.BottomNavigationView.OnNavigationItemSelectedListener navListener =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    android.support.v4.app.Fragment selectedFragment = null ;
+
+                    switch(item.getItemId()) {
+                        case R.id.navigation_clothing:
+                            selectedFragment = new FragmentOne() ;
+                            break;
+                        case R.id.navigation_add:
+                            selectedFragment = new FragmentTwo() ;
+                            break;
+                        case R.id.navigation_pieces:
+                            selectedFragment = new FragmentThree() ;
+                            break;
+                    }
+
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fram,selectedFragment).commit() ;
+
+                    return true;
+                }
+            };
+    }
+
+
