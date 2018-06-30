@@ -11,39 +11,24 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="80dp">
 
 
         <ImageView
             android:id="@+id/imageView4"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:layout_marginTop="100dp"
             android:layout_weight="1"
             android:src="@drawable/cotton" />
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/imageView"
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_weight="1"
+            android:baselineAlignBottom="false"
             android:src="@drawable/picture2" />
-
-        <ImageView
-            android:id="@+id/imageView5"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_marginTop="50dp"
-            android:layout_weight="1"
-            android:src="@drawable/pi" />
-
-        <ImageView
-            android:id="@+id/imageView6"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_marginTop="100dp"
-            android:layout_weight="1"
-            android:src="@drawable/pij" />
 
         <ImageView
             android:id="@+id/imageView3"
@@ -52,9 +37,17 @@
             android:layout_weight="1"
             android:src="@drawable/picture1" />
 
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_weight="1"
+            android:src="@drawable/pij" />
+
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:baselineAligned="false"
             android:text="" />
 
 

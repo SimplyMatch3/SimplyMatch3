@@ -10,7 +10,7 @@
 
     <item
         android:id="@+id/navigation_add"
-        android:icon="@drawable/round_add_photo_alternate_black_24dp"
+        android:icon="@drawable/round_photo_black_18dp"
         android:title="@string/title_dashboard" />
 
     <item
