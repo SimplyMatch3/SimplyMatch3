@@ -1,11 +1,15 @@
 package com.example.mindy.simplymatch3;
 
+import android.Manifest;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +17,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -25,15 +30,19 @@ import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
+
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
 public class MainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
-    private Button btn ;
-    private ImageView imageview ;
+    Button btn ;
+    ImageView imageview ;
     private static final String IMAGE_DIRECTORY = "/demonuts" ;
     private int GALLERY = 1 , CAMERA = 2 ;
 
@@ -69,11 +78,18 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    public static MyDBHandler myDBHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //imageview = (ImageView) findViewById(R.id.imageview);
+        //btn = (Button) findViewById(R.id.btn);
+
+        myDBHandler = new MyDBHandler(this, "ImageDB.sqlite", null, 1);
+        myDBHandler.queryData("CREATE TABLE IF NOT EXISTS IMAGES(Id INTEGER PRIMARY KEY AUTOINCREMENT, image BLOG)");
 
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -93,8 +109,52 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showPictureDialog();
+                //ActivityCompat.requestPermissions(MainActivity.this, new String[](Manifest.permission.READ_EXTERNAL_STORAGE), GALLERY);
+                try {
+                    myDBHandler.insertData(imageViewtoByte(imageview));
+                    Toast.makeText(getApplicationContext(), "Added Sucessfully!", Toast.LENGTH_SHORT).show();
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult( int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (requestCode == GALLERY) {
+            if(grantResults.length>0 && grantResults[0]== PackageManager.PERMISSION_GRANTED ) {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("Image/*");
+                startActivityForResult(intent, GALLERY);
+            }
+
+            else {
+                Toast.makeText(getApplicationContext(), "You don't have permission to access file location!",Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private byte[] imageViewtoByte(ImageView image) {
+        Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        return byteArray;
+    }
+
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode) {
+        super.startActivityForResult(intent, requestCode);
+        if (requestCode == GALLERY) {
+            //String[] manifest = new String[](READ_EXTERNAL_STORAGE);
+            //ActivityCompat.requestPermissions(MainActivity.this, manifest, GALLERY);
+        }
     }
 
     private boolean hasCamera() {
@@ -127,11 +187,13 @@ public class MainActivity extends AppCompatActivity {
             Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
             startActivityForResult(galleryIntent, GALLERY);
+            onActivityResult(GALLERY, RESULT_OK, galleryIntent);
         }
 
         private void takePhotoFromCamera() {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             startActivityForResult(intent, CAMERA);
+            onActivityResult(CAMERA, RESULT_OK, intent);
         }
 
         @Override
@@ -146,13 +208,17 @@ public class MainActivity extends AppCompatActivity {
                 if (data != null) {
                     Uri contentURI = data.getData();
                     try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-                        String path = saveImage(bitmap);
-                        Toast.makeText(MainActivity.this, "Image Saved!", Toast.LENGTH_SHORT).show();
+                        InputStream inputStream = getContentResolver().openInputStream(contentURI);
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         imageview.setImageBitmap(bitmap);
-                    } catch (IOException e) {
+                        //Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
+                        //String path = saveImage(bitmap);
+                        //Toast.makeText(MainActivity.this, "Image Saved!", Toast.LENGTH_SHORT).show();
+                        //imageview.setImageBitmap(bitmap);
+                    } catch( FileNotFoundException e) {
+                    //} catch (IOException e) {
                         e.printStackTrace();
-                        Toast.makeText(MainActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, "Failed", Toast.LENGTH_SHORT).show();
 
                     }
                 }
