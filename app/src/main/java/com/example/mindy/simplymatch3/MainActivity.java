@@ -6,10 +6,12 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTextMessage;
     Button btn ;
     ImageView imageview ;
+    Uri imageUri ;
+    private static final int PICK_IMAGE = 100 ;
     private static final String IMAGE_DIRECTORY = "/demonuts" ;
     private int GALLERY = 1 , CAMERA = 2 ;
 
@@ -99,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         btn = (Button) findViewById(R.id.buttontouse);
-        imageview = (ImageView) findViewById(R.id.iv);
+        imageview = (ImageView) findViewById(R.id.iv123);
 
         if(!hasCamera()) {
             btn.setEnabled(false);
@@ -109,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showPictureDialog();
+                openGallery();
                 //ActivityCompat.requestPermissions(MainActivity.this, new String[](Manifest.permission.READ_EXTERNAL_STORAGE), GALLERY);
                 try {
                     myDBHandler.insertData(imageViewtoByte(imageview));
@@ -119,6 +124,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void openGallery() {
+        Intent gallery = new Intent (Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI) ;
+        startActivityForResult(gallery, PICK_IMAGE);
     }
 
     @Override
@@ -196,6 +206,11 @@ public class MainActivity extends AppCompatActivity {
             onActivityResult(CAMERA, RESULT_OK, intent);
         }
 
+        public void btnClick(View v) {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI) ;
+        startActivityForResult(intent, GALLERY);
+        }
+
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -204,12 +219,27 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            if (requestCode == GALLERY) {
+            if (resultCode == RESULT_OK && requestCode == GALLERY) {
                 if (data != null) {
-                    Uri contentURI = data.getData();
+                    imageUri = data.getData();
+                    imageview.setImageURI(imageUri);
+                    String[] projection = {MediaStore.Images.Media.DATA};
+
+                    Cursor cursor = getContentResolver().query(imageUri, projection, null, null, null);
+                    cursor.moveToFirst();
+
+                    int columnIndex = cursor.getColumnIndex(projection[0]);
+                    String filepath = cursor.getString(columnIndex);
+                    cursor.close();
+                    Bitmap bitmap = BitmapFactory.decodeFile(filepath);
+                    Drawable drawable = new BitmapDrawable(bitmap);
+                    imageview.setBackground(drawable);
+
+
+
                     try {
-                        InputStream inputStream = getContentResolver().openInputStream(contentURI);
-                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                        InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                        bitmap = BitmapFactory.decodeStream(inputStream);
                         imageview.setImageBitmap(bitmap);
                         //Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
                         //String path = saveImage(bitmap);

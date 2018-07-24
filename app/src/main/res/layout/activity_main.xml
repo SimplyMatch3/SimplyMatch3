@@ -17,7 +17,15 @@
         android:orientation="horizontal"
         android:text="@string/app_name"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@mipmap/ic_launcher" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/buttontouse"
@@ -25,25 +33,25 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="@string/button1"
-        android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintHorizontal_bias="0.169"
         app:layout_constraintStart_toStartOf="parent"
-       />
+        tools:layout_editor_absoluteY="405dp" />
 
     <Button
         android:id="@+id/buttontouse2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
         android:layout_weight="1"
         android:text="@string/button2"
         android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        />
+        tools:layout_editor_absoluteY="405dp" />
 
 
     <android.support.design.widget.BottomNavigationView

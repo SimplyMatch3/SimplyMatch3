@@ -14,12 +14,10 @@
 
 
     <ImageView
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:scaleType="fitXY"
-        android:id="@+id/iv"/>
+        android:id="@+id/iv123"
+        android:layout_width="341dp"
+        android:layout_height="265dp"
+        android:contentDescription="@string/app_name" />
 
 
 </FrameLayout>
